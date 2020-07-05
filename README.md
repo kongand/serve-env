@@ -31,3 +31,9 @@ $ cargo install cargo-watch
 # Run
 $ cargo watch -x run
 ```
+
+## Arguments
+
+Run ``cargo run -- --help`` for full list and usage.
+
+``-k, --key-prefix``: Set custom key prefix to serve. Default is REACT_APP_
