@@ -36,4 +36,6 @@ $ cargo watch -x run
 
 Run ``cargo run -- --help`` for full list and usage.
 
-``-k, --key-prefix``: Set custom key prefix to serve. Default is REACT_APP_
+``-k, --key-prefix``: Set custom key prefix to serve. Default is REACT_APP_  
+``-p, --port``: Set custom port to serve on. Default is 3030  
+``-r, --route``: Set custom route to serve on. Default is /env  
