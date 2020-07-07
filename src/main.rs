@@ -10,6 +10,7 @@ async fn main() {
         .author("Anders Gade <andersgade1994@gmail.com>")
         .about("This tool is a small web server that serves the machine's environment variables to the web.")
         .arg("-k, --key-prefix=[PREFIX] 'Set custom key prefix to serve. Default is REACT_APP_'")
+        .arg("-p, --port=[PORT] 'Set custom port to serve on. Default is 3030'")
         .get_matches();
     
     let mut prefix = "REACT_APP_";
@@ -34,7 +35,11 @@ async fn main() {
         .map(move || warp::reply::json(&response));
     
     let address = [127, 0, 0, 1];
-    let port = 3030;
+    
+    let mut port = 3030;
+    if let Some(p) = matches.value_of("port") {
+        port = p.parse().unwrap();
+    }
 
     println!("Running server at {:?}:{}", address, port);
 
