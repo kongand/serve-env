@@ -1,7 +1,9 @@
+mod utils;
+
 use warp::Filter;
-use std::env;
-use std::collections::HashMap;
 use clap::App;
+use utils::response;
+use utils::path;
 
 #[tokio::main]
 async fn main() {
@@ -13,33 +15,8 @@ async fn main() {
         .arg("-p, --port=[PORT] 'Set custom port to serve on. Default is 3030'")
         .arg("-r, --route=[ROUTE] 'Set custom route to serve on. Default is /env'")
         .get_matches();
-    
-    let mut prefix = "REACT_APP_";
-    let prefix_option = matches.value_of("key-prefix");
-    
-    if prefix_option.is_some() {
-        prefix = prefix_option.unwrap();
-        println!("Serving env variables prefixed with {}", prefix);
-    } else {
-        println!("Serving env variables with default prefix ({})", prefix);
-    }
-    
-    let mut response = HashMap::new();
 
-    for (key, value) in env::vars() {
-        if key.starts_with(prefix) {
-            response.insert(key, value);
-        }
-    }
-
-    let mut path = "env".to_owned();
-
-    if let Some(path_option) = matches.value_of("route") {
-        path = path_option.parse().unwrap();
-    }
-
-    let env = warp::path(path.clone())
-        .map(move || warp::reply::json(&response));
+    let path = path(matches.value_of("route"));
     
     let address = [127, 0, 0, 1];
     let mut port = 3030;
@@ -47,6 +24,9 @@ async fn main() {
     if let Some(port_option) = matches.value_of("port") {
         port = port_option.parse().unwrap();
     }
+
+    let env = warp::path(path.clone())
+        .map(move || warp::reply::json(&response("REACT_APP_", matches.value_of("key-prefix"))));
 
     println!("Running server at {:?}:{}/{}", address, port, path);
 
