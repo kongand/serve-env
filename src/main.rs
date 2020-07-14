@@ -2,8 +2,7 @@ mod utils;
 
 use warp::Filter;
 use clap::App;
-use utils::response;
-use utils::path;
+use utils::{response, path};
 
 #[tokio::main]
 async fn main() {
