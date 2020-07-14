@@ -2,6 +2,7 @@ mod utils;
 
 use warp::Filter;
 use clap::App;
+use tokio::{signal, sync::oneshot};
 use utils::{response, path};
 
 #[tokio::main]
@@ -24,12 +25,23 @@ async fn main() {
         port = port_option.parse().unwrap();
     }
 
+    let res = response("REACT_APP_", matches.value_of("key-prefix"));
+
     let env = warp::path(path.clone())
-        .map(move || warp::reply::json(&response("REACT_APP_", matches.value_of("key-prefix"))));
+        .map(move || warp::reply::json(&res));
 
     println!("Running server at {:?}:{}/{}", address, port, path);
 
-    warp::serve(env)
-        .run((address, port))
-        .await;
+    let (tx, rx) = oneshot::channel();
+
+    let (_addr, server) = warp::serve(env)
+        .bind_with_graceful_shutdown((address, port), async {
+            rx.await.ok();
+        });
+
+    tokio::task::spawn(server);
+
+    let _ = signal::ctrl_c().await;
+    println!("Ctrl + c received, closing server...");
+    let __ = tx.send(());
 }
