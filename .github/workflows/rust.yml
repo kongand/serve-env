@@ -7,14 +7,28 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
-  build_linux_binary:
-
+  build_and_test:
+    name: Rust project
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - run: cargo build --verbose --release --locked --target x86_64-unknown-linux-musl
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features --locked --verbose
+
+# env:
+#   CARGO_TERM_COLOR: always
+
+# jobs:
+#   build_linux_binary:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v2
+#     - run: cargo build --verbose --release --locked --target x86_64-unknown-linux-musl
