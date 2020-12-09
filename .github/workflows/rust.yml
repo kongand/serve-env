@@ -8,8 +8,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build_and_test:
-    name: Rust project
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
